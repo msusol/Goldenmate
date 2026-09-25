@@ -1,19 +1,19 @@
 #!/usr/bin/env zsh
-# Stop all Docker containers, sync, then power off. Used as upsmon SHUTDOWNCMD.
+# Stop Docker (and its containers), sync, then power off. Used as upsmon SHUTDOWNCMD.
 # DRY_RUN=1 only logs what would happen.
 log() { logger -t ups-shutdown -- "$*"; echo "$*"; }
 run() { if [[ -n ${DRY_RUN:-} ]]; then log "DRY_RUN: $*"; else "$@"; fi }
 
 log "graceful shutdown starting"
 
-if command -v docker > /dev/null 2>&1; then
-  containers=(${(f)"$(docker ps -q 2> /dev/null)"})
-  if (( ${#containers} )); then
-    log "stopping ${#containers} container(s)"
-    run docker stop --time 30 $containers
-  else
-    log "no running containers"
-  fi
+# Stop the Docker daemon (not `docker stop`): the daemon stops containers itself and
+# leaves them eligible for `restart: unless-stopped` at next boot. Containers stopped
+# individually with `docker stop` would stay down after the outage.
+if systemctl is-active --quiet docker.service; then
+  log "stopping docker ($(docker ps -q 2> /dev/null | wc -l) container(s) running)"
+  run systemctl stop docker.service docker.socket
+else
+  log "docker not running"
 fi
 
 run sync
