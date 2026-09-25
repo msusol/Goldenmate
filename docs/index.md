@@ -1,5 +1,7 @@
 # Goldenmate UPS Docs
 
+Project overview: [README](../README.md)
+
 ## Plans
 
 - [DGX Spark UPS graceful shutdown](plans/dgx-spark-ups-graceful-shutdown.md)
