@@ -79,7 +79,7 @@ Not yet measured: charge-vs-time on battery, time from 40% to the Spark powering
 ## Troubleshooting
 
 - **Watcher fails immediately:** check `journalctl -u ups-battery-watch.service`. zsh reserves names such as `status`; do not use them as variables.
-- **`nut-scanner -U` reports missing libraries:** not required here; the udev rules list `06da:ffff` for `usbhid-ups`.
+- **`nut-scanner -U` reports `Cannot load USB library (libusb-1.0.so)`:** install `libusb-1.0-0-dev` (provides the unversioned symlink), then run the scan with `sudo`; without root it reports "Access denied". The scanner is optional: the udev rules already list `06da:ffff` for `usbhid-ups`.
 - **`battery.runtime` looks wrong:** it is a firmware estimate that drifts; the policy uses `battery.charge`.
 - **Spark stays off after an outage:** check firmware/BIOS power-restore behavior (see the plan's Phase 4).
 

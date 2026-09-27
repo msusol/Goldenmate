@@ -29,13 +29,13 @@ battery, before the UPS cuts out.
 
 - [x] Verify premise: cable UPS to Spark, run `lsusb`, record the UPS VID:PID (2026-09-25: `06da:ffff` Phoenixtec "Smart-Battery", HID class, iSerial ends `M251`, manufacturer string `-BMS-`)
 - [x] Confirm Spark USB-C port: power-input port is clearly marked; the other 3 USB-C ports are open and any works (UPS confirmed enumerating over USB 2.0 HID on the port in use)
-- [x] Check the VID:PID against NUT: `06da:ffff` is listed in the packaged `62-nut-usbups.rules` (nut-server 2.8.1-3.1ubuntu2) as "PROTECT B / NAS - usbhid-ups", so `usbhid-ups` is the right driver. Still confirm live with `nut-scanner -U` after install
+- [x] Check the VID:PID against NUT: `06da:ffff` is listed in the packaged `62-nut-usbups.rules` (nut-server 2.8.1-3.1ubuntu2) as "PROTECT B / NAS - usbhid-ups", so `usbhid-ups` is the right driver. Confirmed live 2026-09-25: `sudo nut-scanner -U` (after installing `libusb-1.0-0-dev`, which provides the `libusb-1.0.so` symlink the scanner needs) returns `driver = "usbhid-ups"`, `vendorid = "06DA"`, `productid = "FFFF"`
 - [ ] Confirm Spark power draw under load vs. UPS 800W / 230Wh limit; estimate runtime at idle and at full GPU load
 
 ### Phase 1: NUT install and driver
 
 - [x] `sudo apt install nut nut-client nut-server`
-- [x] Run `sudo nut-scanner -U` to detect the UPS (skipped: nut-scanner lacks libusb here; driver match came from the udev rules and the live driver start confirmed it)
+- [x] Run `sudo nut-scanner -U` to detect the UPS (first attempt failed: scanner needs `libusb-1.0-0-dev`; after installing it, the scan detected the device and matched `usbhid-ups`)
 - [x] Add `[goldenmate]` block to `/etc/nut/ups.conf` (`driver = usbhid-ups`, `port = auto`; add vendorid/productid or `pollonly`/override options if the generic driver needs them) (pinned `vendorid = 06da`, `productid = ffff`; applied via `scripts/ups-nut-setup.zsh`)
 - [x] Set `MODE=standalone` in `/etc/nut/nut.conf`
 - [x] Ensure udev rule grants the `nut` user access to the USB device; replug and confirm
@@ -69,6 +69,15 @@ battery, before the UPS cuts out.
 
 - [x] Write `docs/process/dgx-spark-ups-setup.md` (prerequisites, steps, troubleshooting) and link it from `docs/index.md`
 - [ ] Optional: email/Slack alert on `ONBATT` and `LOWBATT`
+- [x] Power sampler: `scripts/spark-power-log.zsh` user service logging GPU/CPU/UPS every 10 s (installed 2026-09-25; UPS display read 63 W idle; Monday 06:00 pipeline window will give the loaded comparison)
+
+### Phase 6: job-aware shutdown (tracked with the CLP plan)
+
+Full design and CLP-side tasks: `ColoradoLandPartners/docs/plans/2026-09-25-ups-graceful-job-shutdown.md`.
+
+- [ ] `ups-wait-for-mains`: block until UPS status is OL and charge >= 70%; block while `/run/ups-shutdown` exists; fail open if `upsc` fails
+- [ ] `ups-graceful-shutdown`: set `/run/ups-shutdown`, stop `clp-*.service` user units (via `runuser` with `XDG_RUNTIME_DIR`), wait up to the grace period, then stop Docker and power off
+- [ ] Decisions (2026-09-25): wait for mains at 06:00 instead of skipping; 70% start gate
 
 ## Notes
 

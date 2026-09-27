@@ -10,6 +10,7 @@ Plan: [dgx-spark-ups-graceful-shutdown.md](dgx-spark-ups-graceful-shutdown.md)
 - [ ] Phase 3: battery-based shutdown policy
 - [ ] Phase 4: test
 - [ ] Phase 5: docs and alerting (process doc done; optional alerts open)
+- [ ] Phase 6: job-aware shutdown (`ups-wait-for-mains`, stop CLP jobs before Docker); see the CLP plan `2026-09-25-ups-graceful-job-shutdown.md`
 
 ## Next steps
 

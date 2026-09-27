@@ -44,6 +44,7 @@ Change the threshold in `/etc/nut/ups-shutdown.env` (`THRESHOLD=40`). Set `DRY_R
 | `scripts/ups-battery-watch.zsh` | Poll charge on battery, force shutdown at the threshold |
 | `scripts/ups-graceful-shutdown.zsh` | Stop Docker containers, sync, power off |
 | `scripts/ups-notify.zsh` | `upsmon` NOTIFYCMD hook |
+| `scripts/spark-power-log.zsh` | User service that logs GPU watts, CPU, and UPS state every 10 s (see `docs/process/spark-power-sampler.md`) |
 | `docs/process/dgx-spark-ups-setup.md` | Setup guide, baseline readings, troubleshooting |
 | `docs/plans/dgx-spark-ups-graceful-shutdown.md` | Implementation plan and status |
 

@@ -10,3 +10,4 @@ Project overview: [README](../README.md)
 ## Process
 
 - [DGX Spark UPS setup](process/dgx-spark-ups-setup.md)
+- [Spark power sampler](process/spark-power-sampler.md)

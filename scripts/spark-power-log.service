@@ -1,0 +1,10 @@
+[Unit]
+Description=Log Spark GPU/CPU/UPS telemetry to a daily CSV
+
+[Service]
+ExecStart=%h/LosusAI/Projects/Goldenmate/scripts/spark-power-log.zsh
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
