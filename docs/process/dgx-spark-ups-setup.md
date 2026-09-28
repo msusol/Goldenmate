@@ -72,6 +72,17 @@ Bus 001 Device 002: ID 06da:ffff Phoenixtec Power Co., Ltd Smart-Battery
 
 Not reported by this UPS: `ups.load`, `battery.charge.low`, `battery.runtime.low`, input voltage. Available instant commands: `load.off`, `load.on`, `load.off.delay`, `load.on.delay`, `driver.killpower` (locked by `driver.flag.allow_killpower=0`).
 
+**Real whole-load wattage (read from the UPS's own front display, not
+NUT — since `ups.load` isn't exposed over USB, this is the only whole-
+circuit figure available): ~60 W idling**, with everything on the same
+desk circuit plugged in — router, LED lights, an HV switch, and laptop
+chargers, in addition to the DGX Spark itself. `spark-power-log`'s
+GPU-only sampling (see
+[spark-power-sampler.md](spark-power-sampler.md)) shows ~11-12 W GPU
+draw over the same idle period, confirming the GPU is a small fraction
+of the ~60 W total — most of that idle load is the rest of the desk's
+devices, not the Spark's GPU.
+
 Expected services after setup: `nut-driver@ups`, `nut-server`, `nut-monitor` active; `ups-battery-watch.service` inactive while on mains.
 
 Not yet measured: charge-vs-time on battery, time from 40% to the Spark powering off, and whether the Spark powers back on after mains returns. Record those here after the pull-the-plug test (plan Phase 4).

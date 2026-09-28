@@ -3,6 +3,7 @@ Description=Log Spark GPU/CPU/UPS telemetry to a daily CSV
 
 [Service]
 Environment=UPS=goldenmate@localhost
+Environment=KEEP_DAYS=7
 ExecStart=%h/LosusAI/Projects/LosusAIOps/ups-shutdown/scripts/spark-power-log.zsh
 Restart=on-failure
 RestartSec=10
