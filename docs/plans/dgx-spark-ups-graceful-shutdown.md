@@ -30,7 +30,7 @@ battery, before the UPS cuts out.
 - [x] Verify premise: cable UPS to Spark, run `lsusb`, record the UPS VID:PID (2026-09-25: `06da:ffff` Phoenixtec "Smart-Battery", HID class, iSerial ends `M251`, manufacturer string `-BMS-`)
 - [x] Confirm Spark USB-C port: power-input port is clearly marked; the other 3 USB-C ports are open and any works (UPS confirmed enumerating over USB 2.0 HID on the port in use)
 - [x] Check the VID:PID against NUT: `06da:ffff` is listed in the packaged `62-nut-usbups.rules` (nut-server 2.8.1-3.1ubuntu2) as "PROTECT B / NAS - usbhid-ups", so `usbhid-ups` is the right driver. Confirmed live 2026-09-25: `sudo nut-scanner -U` (after installing `libusb-1.0-0-dev`, which provides the `libusb-1.0.so` symlink the scanner needs) returns `driver = "usbhid-ups"`, `vendorid = "06DA"`, `productid = "FFFF"`
-- [ ] Confirm Spark power draw under load vs. UPS 800W / 230Wh limit; estimate runtime at idle and at full GPU load
+- [x] Confirm Spark power draw under load vs. UPS 800W / 230Wh limit; estimate runtime at idle and at full GPU load (2026-09-27: 156-160W measured on the UPS during active LLM inference load — ollama-server/gemma4:26b eval runs on the DGX Spark's GPU — vs. 63W idle baseline from the power sampler. At 230Wh nominal capacity this is ~1.4-1.5h theoretical runtime at this inference load vs. ~3.6h at idle, before inverter/conversion losses; CLP pipeline-load figure from Phase 5's sampler still pending separately)
 
 ### Phase 1: NUT install and driver
 
@@ -92,5 +92,6 @@ Full design and CLP-side tasks: `ColoradoLandPartners/docs/plans/2026-09-25-ups-
 - Do not rely on the UPS `LB` flag alone; firmware thresholds on consumer units are
   often set very late for a 230Wh battery. Measure actual shutdown time on the Spark.
 - LiFePO4 units can cut off abruptly at low state of charge; leave generous margin.
+- Observed 2026-09-27: 156-160W on the UPS during active LLM inference (ollama-server serving gemma4:26b, eval runs) vs. 63W idle (2026-09-25 sampler baseline) — roughly 2.5x idle draw. This is a real, GPU-bound load distinct from the CLP ETL pipeline's own load profile; both should factor into the runtime/threshold policy, not just idle or pipeline-only figures, since LLM inference (Lori's bridge, ownership parsing, future Travis/Reece traffic) can run concurrently with or independently of the ETL pipeline.
 - Only the Spark (and its network gear, if desired) should be on battery outlets;
   keep other loads off to preserve runtime.

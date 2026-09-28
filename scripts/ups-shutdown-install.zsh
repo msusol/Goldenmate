@@ -14,7 +14,7 @@ install -m 0755 $SRC/ups-notify.zsh /usr/local/sbin/ups-notify
 
 if [[ ! -e /etc/nut/ups-shutdown.env ]]; then
   cat > /etc/nut/ups-shutdown.env << ENV_EOF
-UPS=goldenmate@localhost
+UPS=${UPS_NAME:-ups}@localhost
 THRESHOLD=40
 POLL=10
 ENV_EOF

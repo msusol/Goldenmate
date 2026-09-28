@@ -1,15 +1,20 @@
-# Goldenmate UPS + DGX Spark
+# ups-shutdown
 
-Graceful shutdown of an NVIDIA DGX Spark when a Goldenmate 1000VA lithium UPS runs low on battery.
+Graceful shutdown of an NVIDIA DGX Spark when a USB-attached UPS runs low on battery.
 The UPS talks to the Spark over USB (HID), [Network UPS Tools](https://networkupstools.org/) (NUT)
 reads it, and a small watcher stops all Docker containers and powers the machine off at a
-battery-charge threshold (default 40%).
+battery-charge threshold (default 40%). Brand-agnostic by design (any `usbhid-ups`-supported
+UPS works via the `VENDORID`/`PRODUCTID` overrides in `scripts/ups-nut-setup.zsh`); tested
+against the hardware below.
 
 ## Hardware and software
 
-- Goldenmate 1000VA/800W lithium UPS (LiFePO4, 230Wh, USB communication port)
+- Goldenmate 1000VA/800W lithium UPS (LiFePO4, 230Wh, USB communication port) — the
+  hardware this was built and tested against; other `usbhid-ups`-compatible UPS models
+  should work with the vendor/product ID overrides
 - NVIDIA DGX Spark, Ubuntu 24.04 (DGX OS), aarch64
-- NUT 2.8.1 with the `usbhid-ups` driver (USB ID `06da:ffff`)
+- NUT 2.8.1 with the `usbhid-ups` driver (USB ID `06da:ffff` for the Goldenmate; override
+  `VENDORID`/`PRODUCTID` for other hardware)
 
 ## How it works
 
@@ -29,7 +34,7 @@ Requires `sudo` on the Spark, with the UPS cabled to an open USB-C port (not the
 sudo apt install nut nut-client nut-server
 sudo zsh scripts/ups-nut-setup.zsh
 sudo zsh scripts/ups-shutdown-install.zsh
-upsc goldenmate
+upsc ups
 ```
 
 Change the threshold in `/etc/nut/ups-shutdown.env` (`THRESHOLD=40`). Set `DRY_RUN=1` to run

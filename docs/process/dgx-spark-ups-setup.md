@@ -29,7 +29,7 @@
 4. Verify readings and the watcher:
 
    ```zsh
-   upsc goldenmate
+   upsc ups
    sudo systemctl start ups-battery-watch.service
    journalctl -t ups-watch -n 5 --no-pager
    ```
@@ -45,7 +45,7 @@
 
 ## Expected output
 
-`upsc goldenmate` reports `battery.charge`, `battery.runtime`, `ups.status: OL` on mains.
+`upsc ups` reports `battery.charge`, `battery.runtime`, `ups.status: OL` on mains.
 
 ### Baseline (measured 2026-09-25, on mains)
 
@@ -57,7 +57,7 @@ Conditions: Spark idle-ish (GPU 2% util, 12 W GPU draw, load average about 0.6, 
 Bus 001 Device 002: ID 06da:ffff Phoenixtec Power Co., Ltd Smart-Battery
 ```
 
-`upsc goldenmate` (key values):
+`upsc ups` (key values):
 
 | Variable | Value | Note |
 |---|---|---|
@@ -72,7 +72,7 @@ Bus 001 Device 002: ID 06da:ffff Phoenixtec Power Co., Ltd Smart-Battery
 
 Not reported by this UPS: `ups.load`, `battery.charge.low`, `battery.runtime.low`, input voltage. Available instant commands: `load.off`, `load.on`, `load.off.delay`, `load.on.delay`, `driver.killpower` (locked by `driver.flag.allow_killpower=0`).
 
-Expected services after setup: `nut-driver@goldenmate`, `nut-server`, `nut-monitor` active; `ups-battery-watch.service` inactive while on mains.
+Expected services after setup: `nut-driver@ups`, `nut-server`, `nut-monitor` active; `ups-battery-watch.service` inactive while on mains.
 
 Not yet measured: charge-vs-time on battery, time from 40% to the Spark powering off, and whether the Spark powers back on after mains returns. Record those here after the pull-the-plug test (plan Phase 4).
 

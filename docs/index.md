@@ -1,4 +1,4 @@
-# Goldenmate UPS Docs
+# ups-shutdown docs
 
 Project overview: [README](../README.md)
 

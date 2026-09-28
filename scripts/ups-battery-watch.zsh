@@ -2,7 +2,7 @@
 # While the UPS is on battery, poll charge; at/below THRESHOLD, trigger a forced
 # shutdown through upsmon (which runs SHUTDOWNCMD). Exits when mains returns.
 source /etc/nut/ups-shutdown.env
-UPS=${UPS:-goldenmate@localhost}
+UPS=${UPS:-ups@localhost}
 THRESHOLD=${THRESHOLD:-40}
 POLL=${POLL:-10}
 log() { logger -t ups-watch -- "$*"; }

@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
-# Phase 1-2: configure NUT for the Goldenmate UPS (standalone, localhost only).
+# Phase 1-2: configure NUT for a USB-attached UPS (standalone, localhost only).
+# Defaults below (vendorid/productid/desc) match a Goldenmate 1000VA Pro; override
+# via UPS_NAME/VENDORID/PRODUCTID/UPS_DESC for other hardware.
 # Run with: sudo zsh scripts/ups-nut-setup.zsh
 # Idempotent: skips blocks already present; backs up each file once as *.orig.
 set -eu
@@ -9,7 +11,10 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-UPS=goldenmate
+UPS=${UPS_NAME:-ups}
+VENDORID=${VENDORID:-06da}
+PRODUCTID=${PRODUCTID:-ffff}
+UPS_DESC=${UPS_DESC:-"Goldenmate 1000VA Pro"}
 MON_USER=upsmon
 CONF=/etc/nut
 
@@ -31,9 +36,9 @@ if ! grep -q "^\[$UPS\]" $CONF/ups.conf; then
 [$UPS]
     driver = usbhid-ups
     port = auto
-    vendorid = 06da
-    productid = ffff
-    desc = "Goldenmate 1000VA Pro"
+    vendorid = $VENDORID
+    productid = $PRODUCTID
+    desc = "$UPS_DESC"
 CONF_EOF
 fi
 
@@ -62,7 +67,7 @@ chmod 640 $CONF/*.conf $CONF/upsd.users
 
 # reload udev so the nut group can open the USB device, then start services
 udevadm control --reload-rules
-udevadm trigger --subsystem-match=usb --attr-match=idVendor=06da
+udevadm trigger --subsystem-match=usb --attr-match=idVendor=$VENDORID
 systemctl daemon-reload
 systemctl restart nut-driver-enumerator.service || true
 systemctl enable --now nut-server.service nut-monitor.service

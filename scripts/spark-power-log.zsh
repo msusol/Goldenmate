@@ -5,7 +5,7 @@
 INTERVAL=${INTERVAL:-10}
 DIR=${POWER_LOG_DIR:-$HOME/.local/state/spark-power}
 KEEP_DAYS=${KEEP_DAYS:-30}
-UPS=${UPS:-goldenmate@localhost}
+UPS=${UPS:-ups@localhost}
 
 mkdir -p $DIR
 
